@@ -209,15 +209,21 @@
     emberRate: 1.35
   };
 
-  /* ── 主题 3:效忠之誓 · 教堂(优先用公有领域画作) ─────────── */
+  /* ── 主题 3:效忠之誓 · 教堂 ───────────────────────────── */
   var OATH_FALLBACK = {
     far: layer(
       // 拱窗透光
       '<g opacity="0.9">' +
         '<path d="M520 900 L520 430 C 520 340, 590 292, 660 292 C 730 292, 800 340, 800 430 L800 900 Z" fill="var(--bd-far)" opacity="0.55"/>' +
         '<path d="M880 900 L880 470 C 880 392, 938 352, 998 352 C 1058 352, 1116 392, 1116 470 L1116 900 Z" fill="var(--bd-far)" opacity="0.42"/>' +
-        '<path d="M600 900 L600 452 C 600 380, 648 344, 700 344 C 752 344, 800 380, 800 452 L800 900 Z" fill="var(--bd-ember)" opacity="0.10"/>' +
-        '<path d="M928 900 L928 486 C 928 424, 966 396, 1008 396 C 1050 396, 1088 424, 1088 486 L1088 900 Z" fill="var(--bd-ember)" opacity="0.08"/>' +
+        '<path d="M600 900 L600 452 C 600 380, 648 344, 700 344 C 752 344, 800 380, 800 452 L800 900 Z" fill="var(--bd-ember)" opacity="0.13"/>' +
+        '<path d="M928 900 L928 486 C 928 424, 966 396, 1008 396 C 1050 396, 1088 424, 1088 486 L1088 900 Z" fill="var(--bd-ember)" opacity="0.10"/>' +
+      '</g>' +
+      // 从拱窗斜射下来的光柱
+      '<g class="oath-rays">' +
+        '<path class="ray ray--a" d="M598 436 L656 436 L720 900 L438 900 Z" fill="var(--bd-ember)" opacity="0.10"/>' +
+        '<path class="ray ray--b" d="M944 476 L1000 476 L1068 900 L806 900 Z" fill="var(--bd-ember)" opacity="0.085"/>' +
+        '<path class="ray ray--c" d="M690 452 L724 452 L760 900 L612 900 Z" fill="var(--bd-ember)" opacity="0.06"/>' +
       '</g>' +
       // 立柱
       '<g fill="var(--bd-mid)">' +
@@ -547,37 +553,6 @@
     elNear.innerHTML = sc.near || '';
     parts.length = 0;
     bursts.length = 0;
-
-    if (id === 'oath') tryPainting();
-    else clearPainting();
-  }
-
-  /* 效忠主题:尝试加载公有领域画作作为底层;失败则用程序化场景 */
-  var paintingEl = null, paintingOK = null;
-  function clearPainting() {
-    if (paintingEl) { paintingEl.style.display = 'none'; }
-  }
-  function tryPainting() {
-    if (paintingOK === false) return;
-    if (!paintingEl) {
-      paintingEl = document.createElement('div');
-      paintingEl.className = 'backdrop__painting';
-      paintingEl.setAttribute('aria-hidden', 'true');
-      elSky.parentNode.insertBefore(paintingEl, elFar);
-    }
-    if (paintingOK === true) { paintingEl.style.display = ''; return; }
-    var im = new Image();
-    im.onload = function () {
-      paintingOK = true;
-      paintingEl.style.backgroundImage = 'url("./assets/oath-painting.jpg")';
-      paintingEl.style.display = '';
-      /* 透明度与混合模式由 styles/main.css 的 .backdrop__painting 控制 */
-    };
-    im.onerror = function () {
-      paintingOK = false;
-      if (paintingEl) paintingEl.style.display = 'none';
-    };
-    im.src = './assets/oath-painting.jpg';
   }
 
   /* ═══════════════ 对外接口 ═══════════════ */

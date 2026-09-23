@@ -98,20 +98,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 /* ── 背景场景层与动画 ───────────────────────────────────────── */
 .scene { display: block; width: 100%; height: 100%; }
 
-/* 效忠主题:公有领域版画底层(没有图片文件时自动隐藏)
-   画作是"国王为跪地骑士授勋"的 17 世纪版画,竖构图,所以把视点压到人物所在的下半部;
-   用 luminosity 混合,让它像一层刻痕纹理,而不会把深色背景冲淡。 */
-.backdrop__painting {
-  position: absolute; inset: -2px;
-  background-size: cover;
-  background-position: 50% 70%;
-  background-repeat: no-repeat;
-  filter: saturate(0.5) contrast(1.15) brightness(0.9);
-  mix-blend-mode: luminosity;
-  opacity: 0.42;
-  transition: opacity var(--t-theme) var(--ease-soft);
-}
-
 /* 城堡:旗帜飘 + 窗火闪 + 飞鸟 */
 .banner { transform-box: fill-box; transform-origin: 0% 0%; animation: bannerSway 3.8s ease-in-out infinite; }
 .banner--b { animation-duration: 4.6s; animation-delay: -1.1s; }
@@ -176,6 +162,17 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   54%      { filter: drop-shadow(0 0 4px var(--c-accent)); }
 }
 
+/* 效忠之誓:从拱窗射下来的光柱,缓慢明灭(像尘埃在光里浮动)
+   blur 让硬边多边形化成柔和的光束 */
+.oath-rays .ray { filter: blur(18px); animation: rayBreathe 9s ease-in-out infinite; }
+.oath-rays .ray--b { animation-duration: 11.5s; animation-delay: -3.2s; }
+.oath-rays .ray--c { animation-duration: 8s;    animation-delay: -5.4s; }
+@keyframes rayBreathe {
+  0%, 100% { opacity: 0.5; }
+  42%      { opacity: 1; }
+  70%      { opacity: 0.66; }
+}
+
 /* 风雪归途:孤骑缓缓起伏前行 */
 .lone { animation: loneDrift 9s ease-in-out infinite; }
 @keyframes loneDrift {
@@ -185,7 +182,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* 降低动画:关掉所有背景动画 */
 @media (prefers-reduced-motion: reduce) {
-  .banner, .lit, .duel__l, .duel__r, .duel__spark, .flame, .oath-sword, .lone,
+  .banner, .lit, .duel__l, .duel__r, .duel__spark, .flame, .oath-sword, .oath-rays .ray, .lone,
   .knight__body, .knight__cape { animation: none !important; }
   .duel__spark { opacity: 0 !important; }
 }
