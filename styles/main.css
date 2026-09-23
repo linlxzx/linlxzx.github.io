@@ -98,13 +98,17 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 /* ── 背景场景层与动画 ───────────────────────────────────────── */
 .scene { display: block; width: 100%; height: 100%; }
 
-/* 效忠主题:公有领域画作底层(没有图片文件时自动隐藏) */
+/* 效忠主题:公有领域版画底层(没有图片文件时自动隐藏)
+   画作是"国王为跪地骑士授勋"的 17 世纪版画,竖构图,所以把视点压到人物所在的下半部;
+   用 luminosity 混合,让它像一层刻痕纹理,而不会把深色背景冲淡。 */
 .backdrop__painting {
   position: absolute; inset: -2px;
   background-size: cover;
-  background-position: 50% 34%;
+  background-position: 50% 70%;
   background-repeat: no-repeat;
-  filter: saturate(0.72) contrast(1.06) brightness(0.72);
+  filter: saturate(0.5) contrast(1.15) brightness(0.9);
+  mix-blend-mode: luminosity;
+  opacity: 0.42;
   transition: opacity var(--t-theme) var(--ease-soft);
 }
 

@@ -571,8 +571,7 @@
       paintingOK = true;
       paintingEl.style.backgroundImage = 'url("./assets/oath-painting.jpg")';
       paintingEl.style.display = '';
-      // 画作压暗,让前景 UI 可读
-      paintingEl.style.opacity = '0.55';
+      /* 透明度与混合模式由 styles/main.css 的 .backdrop__painting 控制 */
     };
     im.onerror = function () {
       paintingOK = false;
