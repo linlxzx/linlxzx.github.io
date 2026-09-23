@@ -172,7 +172,15 @@ window.SITE_CONTENT = {
       label: 'SEND A RAVEN',
       accent: 'gold',
       nav: '信鸦',
-      blocks: []          /* ← 留空。想放联系方式就用 links,见文件顶部示例 */
+      blocks: [
+        /* links 区块:填了 url 就会变成可点击的链接 */
+        { type: 'links', items: [
+            { label: 'GitHub', value: '@x1234567890236',
+              url: 'https://github.com/x1234567890236' },
+            { label: '邮箱',   value: '407207915@qq.com',
+              url: 'mailto:407207915@qq.com' }
+        ]}
+      ]
     }
 
   ]
