@@ -3,7 +3,7 @@
 **线上地址:https://linlxzx.github.io/**
 仓库:https://github.com/linlxzx/linlxzx.github.io
 
-一个**纯手写**的个人网站:HTML + CSS + JavaScript,**零框架、零构建、零外部依赖**。
+一个**纯ai写**的个人网站:HTML + CSS + JavaScript,**零框架、零构建、零外部依赖**。
 所有的背景、纹理、骑士、音效都是**程序化生成**的 —— 没有一张图片素材、没有一个音频文件。
 
 ---
