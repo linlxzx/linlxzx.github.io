@@ -175,8 +175,8 @@ window.SITE_CONTENT = {
       blocks: [
         /* links 区块:填了 url 就会变成可点击的链接 */
         { type: 'links', items: [
-            { label: 'GitHub', value: '@x1234567890236',
-              url: 'https://github.com/x1234567890236' },
+            { label: 'GitHub', value: '@linlxzx',
+              url: 'https://github.com/linlxzx' },
             { label: '邮箱',   value: '407207915@qq.com',
               url: 'mailto:407207915@qq.com' }
         ]}
