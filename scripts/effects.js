@@ -152,7 +152,22 @@
     });
   }
 
-  /* ── 6. 音效绑定 ── */
+  /* ── 6. 音效绑定 ──
+     分工:
+       pointerover  → 播放元素上 data-sound 指定的"悬停音"(默认 hover)
+       click        → 按元素种类播不同的"点击音":
+                        侧边导航点     → nav(清脆小钟)
+                        链接 / 卡片    → confirm(两音上行)
+                        其余按钮       → click(木叩)
+      下面 OWN_SOUND 里的元素自己会出声,这里不再重复播,避免两声叠在一起。 */
+  var OWN_SOUND = '#sound-btn, #cursor-btn, #switcher-btn, #welcome-ok, .tcard';
+
+  function clickSoundFor(el) {
+    if (el.classList.contains('railnav__dot')) return 'nav';
+    if (el.tagName === 'A' || el.classList.contains('card') || el.classList.contains('link')) return 'confirm';
+    return 'click';
+  }
+
   function initSound() {
     document.addEventListener('pointerover', function (e) {
       var t = e.target;
@@ -164,12 +179,11 @@
     document.addEventListener('click', function (e) {
       var t = e.target;
       if (!t || !t.closest) return;
-      var n = t.closest('a, [data-sound]');
-      if (!n) return;
-      if (LZ.audio && LZ.audio.isEnabled()) {
-        var s = n.getAttribute('data-sound');
-        if (s !== 'click') LZ.audio.play('click');
-      }
+      if (!LZ.audio || !LZ.audio.isEnabled()) return;
+      if (t.closest(OWN_SOUND)) return;                    // 这些元素自带的音更合适
+      var el = t.closest('a, button, .card, .link, .railnav__dot, [data-sound]');
+      if (!el) return;
+      LZ.audio.play(clickSoundFor(el));
     }, { passive: true });
   }
 

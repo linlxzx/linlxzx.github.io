@@ -62,17 +62,28 @@
     }
   }
 
+  /* 一记劈砍:重播动画 + 冲击波 + 剑尖火花 + 金属铮鸣 */
+  var strikeTimer = null;
+  function strike(px, py) {
+    if (!el) return;
+    el.classList.remove('is-strike');
+    void el.offsetWidth;                 // 强制重排,保证动画能重播
+    el.classList.add('is-strike');
+    clearTimeout(strikeTimer);
+    strikeTimer = setTimeout(function () { el.classList.remove('is-strike'); }, 540);
+
+    if (LZ.backdrops) LZ.backdrops.spark(px, py);   // 剑尖迸出火花
+    if (LZ.audio) LZ.audio.play('blade');           // 轻金属铮鸣
+  }
+
   function onDown(e) {
     if (!enabled || !ready) return;
     down = true;
-    el.classList.add('is-down');
-    if (e.button === 0 && LZ.backdrops) LZ.backdrops.spark(x, y);
-    if (LZ.audio) LZ.audio.play('click');
+    if (e.button === 0) strike(x, y);
   }
 
   function onUp() {
     down = false;
-    if (el) el.classList.remove('is-down');
   }
 
   function onLeave() { if (el && ready) el.classList.remove('is-ready'); }
@@ -93,7 +104,7 @@
     enabled = false;
     ready = false;
     document.body.classList.remove('has-cursor');
-    if (el) el.classList.remove('is-ready', 'is-hot', 'is-pen', 'is-down');
+    if (el) el.classList.remove('is-ready', 'is-hot', 'is-pen', 'is-strike');
     window.removeEventListener('pointermove', onMove);
     window.removeEventListener('pointerdown', onDown);
     window.removeEventListener('pointerup', onUp);

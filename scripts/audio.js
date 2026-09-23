@@ -119,6 +119,35 @@
       tone({ type: 'square', freq: 300, to: 190, dur: 0.075, gain: 0.028, filter: 'lowpass', filterFreq: 900 });
     },
 
+    /* 宝剑点击:短促的金属铮鸣(比 clash 轻,适合每次点击) */
+    blade: function () {
+      var f = 2050 + Math.random() * 520;
+      hiss({ dur: 0.085, gain: 0.055, attack: 0.002, filter: 'highpass', filterFreq: 3200, q: 1.1 });
+      tone({ type: 'sawtooth', freq: f, to: f * 1.55, dur: 0.085, gain: 0.034,
+             filter: 'bandpass', filterFreq: 3400, q: 2.4, attack: 0.001 });
+      tone({ type: 'sine', freq: f * 1.9, to: f * 1.2, dur: 0.19, gain: 0.019, attack: 0.001 });
+      tone({ type: 'sine', freq: 152, to: 92, dur: 0.13, gain: 0.028, attack: 0.002 });
+    },
+
+    /* 导航圆点:清脆小钟 */
+    nav: function () {
+      tone({ type: 'sine',     freq: 880.00, dur: 0.34, gain: 0.042, attack: 0.003 });
+      tone({ type: 'triangle', freq: 1318.5, dur: 0.24, gain: 0.021, attack: 0.005 });
+    },
+
+    /* 确认:两音上行(点链接 / 卡片) */
+    confirm: function () {
+      tone({ type: 'triangle', freq: 587.33, dur: 0.20, gain: 0.046, attack: 0.004 });
+      tone({ type: 'triangle', freq: 880.00, dur: 0.30, gain: 0.038, attack: 0.012 });
+      tone({ type: 'sine',     freq: 1174.7, dur: 0.36, gain: 0.021, attack: 0.03 });
+    },
+
+    /* 开关:木制拨动(主题面板 / 鼠标开关) */
+    toggle: function () {
+      hiss({ dur: 0.045, gain: 0.040, filter: 'bandpass', filterFreq: 2400, q: 6 });
+      tone({ type: 'square', freq: 430, to: 300, dur: 0.06, gain: 0.022, filter: 'lowpass', filterFreq: 1100 });
+    },
+
     /* 火漆按下(欢迎弹窗的"确定") */
     seal: function () {
       tone({ type: 'sine', freq: 168, to: 92, dur: 0.34, gain: 0.13, attack: 0.004 });

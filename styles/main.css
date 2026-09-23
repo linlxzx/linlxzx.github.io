@@ -229,33 +229,69 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   opacity: 0;
   will-change: transform;
   transition: opacity var(--t-mid) var(--ease-out);
+
+  /* 宝剑的静止倾角。普通鼠标指针是斜的(指向左上),所以这里用 -45°。
+     想改角度,只改这一个值即可。 */
+  --cursor-angle: -45deg;
 }
 .cursor.is-ready { opacity: 1; }
+
 .cursor__sword {
   display: block;
   /* 剑尖(viewBox 里的 20,2)对准指针原点 */
   margin-left: -20px;
   margin-top: -2px;
-  transform-origin: 50% 5%;
+  /* 以剑尖为旋转轴心:剑身斜出去,但剑尖仍精确落在指针位置上 */
+  transform-origin: 20px 2px;
+  transform: rotate(var(--cursor-angle));
   /* 双层阴影:内圈是暗描边,保证在浅色羊皮纸弹窗上也能看清剑的轮廓 */
   filter: drop-shadow(0 0 2px rgba(0,0,0,0.92)) drop-shadow(0 3px 6px rgba(0,0,0,0.6));
   transition: filter var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
 }
+
 .cursor__glow {
-  position: absolute; left: -34px; top: -34px;
-  width: 68px; height: 68px; border-radius: 50%;
+  position: absolute; left: -38px; top: -38px;
+  width: 76px; height: 76px; border-radius: 50%;
   background: radial-gradient(circle, var(--c-glow) 0%, transparent 70%);
   opacity: 0.55;
   transition: opacity var(--t-mid) var(--ease-out);
 }
+
+/* 点击冲击波:一圈迅速扩散的金色涟漪 */
+.cursor__impact {
+  position: absolute; left: 0; top: 0;
+  width: 14px; height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  border: 3px solid var(--c-accent);
+  box-shadow: 0 0 16px var(--c-glow), inset 0 0 10px var(--c-glow);
+  opacity: 0;
+  transform: scale(0.2);
+}
+
 /* 悬停可交互元素:刃口发亮 */
 .cursor.is-hot .cursor__sword { filter: drop-shadow(0 0 2px rgba(0,0,0,0.92)) drop-shadow(0 0 8px var(--c-accent)) drop-shadow(0 3px 6px rgba(0,0,0,0.6)); }
 .cursor.is-hot .cursor__glow  { opacity: 1; }
-/* 在输入框上变成羽毛笔姿态 */
-.cursor.is-pen .cursor__sword { transform: rotate(-38deg) scale(0.86); }
-/* 按下 */
-.cursor.is-down .cursor__sword { transform: translateY(3px) rotate(-6deg); }
-.cursor.is-down .cursor__glow  { opacity: 1.2; }
+
+/* 在输入框上变成羽毛笔姿态(在基础倾角上再压一点) */
+.cursor.is-pen .cursor__sword { transform: rotate(calc(var(--cursor-angle) - 16deg)) scale(0.86); }
+
+/* 按下:一记短促的劈砍 + 冲击波(由 cursor.js 加 .is-strike 触发) */
+.cursor.is-strike .cursor__sword  { animation: swordStrike 0.30s var(--ease-out); }
+.cursor.is-strike .cursor__impact { animation: cursorImpact 0.46s var(--ease-out); }
+.cursor.is-strike .cursor__glow   { opacity: 1.15; }
+
+@keyframes swordStrike {
+  0%   { transform: rotate(var(--cursor-angle)) translate(0, 0) scale(1); }
+  28%  { transform: rotate(calc(var(--cursor-angle) + 13deg)) translate(3px, 8px) scale(0.92); }
+  62%  { transform: rotate(calc(var(--cursor-angle) - 5deg)) translate(-2px, 1px) scale(1.03); }
+  100% { transform: rotate(var(--cursor-angle)) translate(0, 0) scale(1); }
+}
+@keyframes cursorImpact {
+  0%   { opacity: 1;   transform: scale(0.25); border-width: 3px; }
+  55%  { opacity: 0.65; }
+  100% { opacity: 0;   transform: scale(4.8);  border-width: 1px; }
+}
 
 /* ───────────────────────── 5. 顶栏 ───────────────────────── */
 .topbar {
@@ -550,11 +586,47 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   color: var(--c-accent-cur, var(--c-accent));
   filter: drop-shadow(0 0 22px var(--c-glow));
 }
+/* 名字 + 旁边那句彰显的话(creed) */
+.profile__namerow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-3) var(--sp-5);
+}
 .profile__name {
   font-family: var(--font-display);
   font-size: var(--fs-xl);
   font-weight: 700;
   letter-spacing: 0.08em;
+}
+/* creed:镶金 + 光晕,左右各一道熔金细线,让它跳出来 */
+.profile__creed {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: clamp(1.02rem, 0.90rem + 0.55vw, 1.44rem);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--c-accent-cur, var(--c-accent));
+  text-shadow: 0 0 22px var(--c-glow), 0 1px 3px rgba(0,0,0,0.7);
+  white-space: nowrap;
+}
+.profile__creed::before,
+.profile__creed::after {
+  content: '';
+  display: block;
+  width: 30px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--c-accent-cur, var(--c-accent)));
+  box-shadow: 0 0 9px var(--c-glow);
+}
+.profile__creed::after {
+  background: linear-gradient(90deg, var(--c-accent-cur, var(--c-accent)), transparent);
+}
+@media (max-width: 620px) {
+  .profile__creed { white-space: normal; letter-spacing: 0.08em; }
+  .profile__creed::before, .profile__creed::after { width: 14px; }
 }
 .profile__title {
   margin: var(--sp-1) 0 var(--sp-4);

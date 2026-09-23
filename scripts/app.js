@@ -260,7 +260,11 @@
 
     buildSwitcher();
 
-    if (switcherBtn) switcherBtn.addEventListener('click', function (e) { e.stopPropagation(); toggleSwitcher(); });
+    if (switcherBtn) switcherBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (LZ.audio) LZ.audio.play('toggle');
+      toggleSwitcher();
+    });
     document.addEventListener('click', function (e) {
       if (switcher && !switcher.contains(e.target)) closeSwitcher();
     });
@@ -275,7 +279,10 @@
     if (LZ.cursor) LZ.cursor.init(cursorPref !== 'off');
     if (cursorBtn) {
       cursorBtn.setAttribute('aria-pressed', (cursorPref !== 'off') ? 'true' : 'false');
-      cursorBtn.addEventListener('click', function () { setCursor(!LZ.cursor.isEnabled()); });
+      cursorBtn.addEventListener('click', function () {
+        if (LZ.audio) LZ.audio.play('toggle');
+        setCursor(!LZ.cursor.isEnabled());
+      });
     }
 
     // 7. 主题(优先用 ?theme=xxx,其次用上次记住的)

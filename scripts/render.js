@@ -43,12 +43,17 @@
         return '<div class="meta__row"><span class="meta__k">' + esc(m.k) +
                '</span><span class="meta__v">' + esc(m.v) + '</span></div>';
       }).join('');
+      /* creed:名字旁边那句彰显的话(镶金突出显示) */
+      var creed = b.creed ? '<p class="profile__creed"><span>' + esc(b.creed) + '</span></p>' : '';
 
       return '<div class="panel reveal">' +
                '<div class="profile">' +
                  '<div>' + CREST + '</div>' +
                  '<div>' +
-                   '<h3 class="profile__name">' + esc(b.name || '') + '</h3>' +
+                   '<div class="profile__namerow">' +
+                     '<h3 class="profile__name">' + esc(b.name || '') + '</h3>' +
+                     creed +
+                   '</div>' +
                    (b.title ? '<p class="profile__title">' + esc(b.title) + '</p>' : '') +
                    '<div class="profile__bio">' + bio + '</div>' +
                    (tags ? '<div class="tags">' + tags + '</div>' : '') +
