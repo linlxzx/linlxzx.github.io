@@ -1,0 +1,192 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   tokens.css —— 【换配色 / 换主题只改这个文件】
+   ---------------------------------------------------------------------------
+   结构:
+     1. :root          全站通用的尺度、字体、缓动(一般不用动)
+     2. [data-theme=…] 五套主题的配色变量。想调颜色,改这里对应的值即可。
+   切换主题靠 <html data-theme="castle"> 这个属性,由 scripts/app.js 控制。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════ 1. 通用令牌 ═══════════════════ */
+:root {
+  /* —— 字体 —— */
+  --font-display: 'Cinzel', 'Cinzel Decorative', Georgia, 'Times New Roman',
+                  'Songti SC', 'SimSun', 'Noto Serif SC', serif;
+  --font-body:    Georgia, 'Times New Roman', 'Songti SC', 'SimSun',
+                  'Noto Serif SC', 'Microsoft YaHei', serif;
+  --font-deco:    'Cinzel Decorative', 'Cinzel', Georgia, serif;
+
+  /* —— 流体字阶(随视口自动缩放) —— */
+  --fs-xs:   clamp(0.70rem, 0.66rem + 0.20vw, 0.80rem);
+  --fs-sm:   clamp(0.82rem, 0.78rem + 0.22vw, 0.94rem);
+  --fs-base: clamp(0.95rem, 0.90rem + 0.28vw, 1.08rem);
+  --fs-lg:   clamp(1.10rem, 1.00rem + 0.50vw, 1.34rem);
+  --fs-xl:   clamp(1.35rem, 1.15rem + 0.95vw, 1.85rem);
+  --fs-2xl:  clamp(1.75rem, 1.35rem + 1.80vw, 2.85rem);
+  --fs-3xl:  clamp(2.30rem, 1.60rem + 3.20vw, 4.20rem);
+
+  /* —— 间距 —— */
+  --sp-1: 0.25rem;  --sp-2: 0.5rem;   --sp-3: 0.75rem;  --sp-4: 1rem;
+  --sp-5: 1.5rem;   --sp-6: 2rem;     --sp-7: 3rem;     --sp-8: 4.5rem;
+  --sp-9: 7rem;
+
+  /* —— 布局 —— */
+  --content-max: 1080px;
+  --rail-w: 74px;
+  --topbar-h: 62px;
+
+  /* —— 圆角 / 描边 —— */
+  --r-sm: 3px;  --r-md: 6px;  --r-lg: 12px;  --r-pill: 999px;
+  --hair: 1px;
+
+  /* —— 缓动 —— */
+  --ease-out:  cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-soft: cubic-bezier(0.33, 0.00, 0.20, 1);
+  --ease-back: cubic-bezier(0.34, 1.46, 0.64, 1);
+
+  /* —— 时长 —— */
+  --t-fast: 0.16s;  --t-mid: 0.30s;  --t-slow: 0.62s;  --t-theme: 0.85s;
+
+  /* —— 层级 —— */
+  --z-backdrop: 0;  --z-particles: 1;  --z-content: 10;
+  --z-rail: 40;     --z-topbar: 50;    --z-switcher: 60;
+  --z-cursor: 90;   --z-welcome: 100;
+
+  /* —— 阴影 —— */
+  --shadow-panel: 0 18px 50px -22px rgba(0, 0, 0, 0.85);
+  --shadow-lift:  0 26px 60px -24px rgba(0, 0, 0, 0.9);
+}
+
+/* ═══════════════════ 2. 五套主题配色 ═══════════════════
+   每个主题定义两组颜色:
+     A. --bd-*  大背景场景用(天空 / 远近景剪影 / 雾 / 粒子)
+     B. --c-*   界面用(底色 / 面板 / 文字 / 主色)
+   想微调某个主题,只改那一段里的值就好。                                */
+
+/* ── 主题 1:城堡之外 · 黄昏 ───────────────────────────── */
+[data-theme='castle'] {
+  --bd-sky-1: #241a35;  --bd-sky-2: #5c374a;  --bd-sky-3: #c97a4a;  --bd-sky-4: #f0b46a;
+  --bd-far:   #3b2c48;  --bd-mid: #241a2e;    --bd-near: #120e19;
+  --bd-fog:   rgba(240, 180, 106, 0.16);
+  --bd-ember: #ffb45e;
+  --p-color:  rgba(255, 205, 140, 0.55);
+
+  --c-bg:        #100c16;
+  --c-panel:     rgba(28, 21, 36, 0.62);
+  --c-panel-2:   rgba(38, 28, 46, 0.50);
+  --c-line:      rgba(224, 163, 77, 0.28);
+  --c-line-soft: rgba(240, 200, 150, 0.14);
+  --c-ink:       #f4ead6;
+  --c-ink-dim:   #c3b39a;
+  --c-ink-faint: #8c7f6c;
+  --c-accent:    #e0a34d;
+  --c-accent-2:  #b0522f;
+  --c-accent-3:  #7f6ba8;
+  --c-glow:      rgba(224, 163, 77, 0.42);
+}
+
+/* ── 主题 2:战场 · 火光与血 ───────────────────────────── */
+[data-theme='battle'] {
+  --bd-sky-1: #150809;  --bd-sky-2: #3d110d;  --bd-sky-3: #832715;  --bd-sky-4: #c9501f;
+  --bd-far:   #3a1611;  --bd-mid: #210b09;    --bd-near: #0e0504;
+  --bd-fog:   rgba(201, 80, 31, 0.20);
+  --bd-ember: #ff7a2f;
+  --p-color:  rgba(255, 150, 70, 0.70);
+
+  --c-bg:        #0d0505;
+  --c-panel:     rgba(32, 15, 12, 0.64);
+  --c-panel-2:   rgba(46, 20, 15, 0.50);
+  --c-line:      rgba(226, 86, 43, 0.30);
+  --c-line-soft: rgba(255, 150, 100, 0.14);
+  --c-ink:       #f6e3d6;
+  --c-ink-dim:   #c9a595;
+  --c-ink-faint: #8f7065;
+  --c-accent:    #e2562b;
+  --c-accent-2:  #e0a34d;
+  --c-accent-3:  #7a2f2f;
+  --c-glow:      rgba(226, 86, 43, 0.45);
+}
+
+/* ── 主题 3:效忠之誓 · 教堂彩窗 ───────────────────────── */
+[data-theme='oath'] {
+  --bd-sky-1: #0b1224;  --bd-sky-2: #172040;  --bd-sky-3: #2f3159;  --bd-sky-4: #6d5a8f;
+  --bd-far:   #182240;  --bd-mid: #0f1628;    --bd-near: #06090f;
+  --bd-fog:   rgba(150, 175, 235, 0.14);
+  --bd-ember: #ffe6a8;
+  --p-color:  rgba(255, 250, 220, 0.55);
+
+  --c-bg:        #070a13;
+  --c-panel:     rgba(18, 24, 44, 0.66);
+  --c-panel-2:   rgba(28, 34, 60, 0.48);
+  --c-line:      rgba(212, 178, 90, 0.32);
+  --c-line-soft: rgba(200, 210, 255, 0.14);
+  --c-ink:       #eef1fa;
+  --c-ink-dim:   #b3bcd4;
+  --c-ink-faint: #7d86a0;
+  --c-accent:    #d4b25a;
+  --c-accent-2:  #6f7fc4;
+  --c-accent-3:  #8f5a86;
+  --c-glow:      rgba(212, 178, 90, 0.40);
+}
+
+/* ── 主题 4:风雪归途 · 冷月 ───────────────────────────── */
+[data-theme='winter'] {
+  --bd-sky-1: #080f18;  --bd-sky-2: #16283a;  --bd-sky-3: #32506c;  --bd-sky-4: #7d9cbb;
+  --bd-far:   #23384d;  --bd-mid: #152638;    --bd-near: #0a121c;
+  --bd-fog:   rgba(200, 222, 245, 0.22);
+  --bd-ember: #cfe4f7;
+  --p-color:  rgba(235, 245, 255, 0.85);
+
+  --c-bg:        #070d14;
+  --c-panel:     rgba(18, 28, 40, 0.62);
+  --c-panel-2:   rgba(26, 38, 52, 0.48);
+  --c-line:      rgba(159, 198, 232, 0.28);
+  --c-line-soft: rgba(200, 225, 250, 0.14);
+  --c-ink:       #e9f2fb;
+  --c-ink-dim:   #adbccd;
+  --c-ink-faint: #78889a;
+  --c-accent:    #9fc6e8;
+  --c-accent-2:  #d8e9f8;
+  --c-accent-3:  #5f7fa8;
+  --c-glow:      rgba(159, 198, 232, 0.42);
+}
+
+/* ── 主题 5:藏书阁 · 烛火 ─────────────────────────────── */
+[data-theme='scriptorium'] {
+  --bd-sky-1: #140d05;  --bd-sky-2: #2b1d0d;  --bd-sky-3: #4d3517;  --bd-sky-4: #8a6428;
+  --bd-far:   #35250f;  --bd-mid: #221606;    --bd-near: #120b03;
+  --bd-fog:   rgba(232, 181, 71, 0.16);
+  --bd-ember: #ffca63;
+  --p-color:  rgba(255, 220, 150, 0.60);
+
+  --c-bg:        #100a04;
+  --c-panel:     rgba(34, 24, 12, 0.64);
+  --c-panel-2:   rgba(46, 33, 17, 0.48);
+  --c-line:      rgba(232, 181, 71, 0.30);
+  --c-line-soft: rgba(250, 220, 160, 0.14);
+  --c-ink:       #f6e9cd;
+  --c-ink-dim:   #cbb894;
+  --c-ink-faint: #8f7f62;
+  --c-accent:    #e8b547;
+  --c-accent-2:  #a8651f;
+  --c-accent-3:  #6f7a4a;
+  --c-glow:      rgba(232, 181, 71, 0.44);
+}
+
+/* ── 分区氛围色覆盖 ─────────────────────────────────────
+   content.js 里每个分区可以写 accent:'gold'|'blood'|'steel'|'moss'|'sky'
+   这里把它映射成具体颜色,让分区有层次又不跳出主题。                   */
+[data-accent='gold']  { --c-accent-cur: var(--c-accent); }
+[data-accent='blood'] { --c-accent-cur: var(--c-accent-2); }
+[data-accent='steel'] { --c-accent-cur: var(--c-accent-3); }
+[data-accent='moss']  { --c-accent-cur: var(--c-accent-3); }
+[data-accent='sky']   { --c-accent-cur: var(--c-accent); }
+
+:root { --c-accent-cur: var(--c-accent); }
+
+/* ── 降低动画(尊重系统设置) ───────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --t-fast: 0.01s; --t-mid: 0.01s; --t-slow: 0.01s; --t-theme: 0.01s;
+  }
+}

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="castle">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>linlxzx · 旅行者的空间</title>
+<meta name="description" content="linlxzx 的个人空间 —— 一位旅人与骑士的编年史。">
+<meta name="color-scheme" content="dark">
+<meta property="og:title" content="linlxzx · 旅行者的空间">
+<meta property="og:description" content="一位旅人与骑士的编年史。">
+<meta property="og:type" content="website">
+
+<link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./assets/fonts/fonts.css">
+<link rel="stylesheet" href="./styles/tokens.css">
+<link rel="stylesheet" href="./styles/main.css">
+</head>
+
+<body>
+
+<!-- ══════════ 大背景层（5 个场景，由 scripts/backdrops.js 绘制） ══════════ -->
+<div class="backdrop" id="backdrop" aria-hidden="true">
+  <div class="backdrop__sky"    id="bd-sky"></div>
+  <div class="backdrop__far"    id="bd-far"></div>
+  <div class="backdrop__mid"    id="bd-mid"></div>
+  <div class="backdrop__near"   id="bd-near"></div>
+  <canvas class="backdrop__fx"  id="bd-fx"></canvas>
+  <div class="backdrop__grade"  id="bd-grade"></div>
+  <div class="backdrop__vignette"></div>
+  <div class="backdrop__grain"></div>
+</div>
+
+<!-- ══════════ 全局粒子层（浮尘 / 火星 / 飘雪 / 飘羽） ══════════ -->
+<canvas class="particles" id="particles" aria-hidden="true"></canvas>
+
+<!-- ══════════ 宝剑鼠标（由 scripts/cursor.js 驱动） ══════════ -->
+<div class="cursor" id="cursor" aria-hidden="true">
+  <div class="cursor__glow" id="cursor-glow"></div>
+  <svg class="cursor__sword" id="cursor-sword" viewBox="0 0 40 64" width="40" height="64">
+    <defs>
+      <linearGradient id="bladeGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%"   stop-color="#6f7787"/>
+        <stop offset="38%"  stop-color="#eef2f8"/>
+        <stop offset="52%"  stop-color="#ffffff"/>
+        <stop offset="72%"  stop-color="#aab3c2"/>
+        <stop offset="100%" stop-color="#5c6472"/>
+      </linearGradient>
+      <linearGradient id="hiltGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#e8c84a"/>
+        <stop offset="50%"  stop-color="#a8842a"/>
+        <stop offset="100%" stop-color="#6d5416"/>
+      </linearGradient>
+    </defs>
+    <!-- 剑刃 -->
+    <path d="M20 2 L23.4 12 L23.4 40 L20 44 L16.6 40 L16.6 12 Z" fill="url(#bladeGrad)"/>
+    <path d="M20 2 L20 44" stroke="#ffffff" stroke-width="0.7" opacity="0.55"/>
+    <!-- 护手 -->
+    <rect x="7"  y="43" width="26" height="3.6" rx="1.8" fill="url(#hiltGrad)"/>
+    <circle cx="20" cy="44.8" r="2.1" fill="#c9a227"/>
+    <!-- 握柄 -->
+    <rect x="18.1" y="46.4" width="3.8" height="12" rx="1.6" fill="#4a2f1c"/>
+    <path d="M18.1 49.2 H21.9 M18.1 52.4 H21.9 M18.1 55.6 H21.9" stroke="#7a5433" stroke-width="0.9"/>
+    <!-- 剑首 -->
+    <circle cx="20" cy="60.4" r="3.1" fill="url(#hiltGrad)"/>
+    <circle cx="20" cy="60.4" r="1.2" fill="#7a2f2f"/>
+  </svg>
+</div>
+
+<!-- ══════════ 顶栏：站名 / 主题切换 / 音效开关 ══════════ -->
+<header class="topbar">
+  <a class="brand" href="#top" data-sound="hover">
+    <svg class="brand__crest" viewBox="0 0 24 28" width="22" height="26" aria-hidden="true">
+      <path d="M12 1 L22 4.6 V14 C22 20.4 17.6 24.9 12 27 C6.4 24.9 2 20.4 2 14 V4.6 Z"
+            fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M12 6.5 V21 M6.6 11.4 H17.4" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+    <span class="brand__name">linlxzx</span>
+    <span class="brand__sub">Traveler's Keep</span>
+  </a>
+
+  <div class="topbar__actions">
+    <!-- 大背景切换 -->
+    <div class="switcher" id="switcher">
+      <button class="iconbtn" id="switcher-btn" type="button"
+              aria-haspopup="true" aria-expanded="false" aria-label="切换大背景"
+              data-sound="click">
+        <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true">
+          <path d="M5 3 V21 M5 4 H17 L14.2 8 L17 12 H5"
+                fill="none" stroke="currentColor" stroke-width="1.7"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="switcher__panel" id="switcher-panel" role="menu" aria-label="选择大背景">
+        <p class="switcher__hint">选择你的战场 <kbd>1</kbd>–<kbd>5</kbd></p>
+        <div class="switcher__grid" id="switcher-grid"></div>
+      </div>
+    </div>
+
+    <!-- 音效开关 -->
+    <button class="iconbtn" id="sound-btn" type="button"
+            aria-pressed="false" aria-label="开启音效" data-sound="click">
+      <svg class="ico-on"  viewBox="0 0 24 24" width="19" height="19" aria-hidden="true">
+        <path d="M4 9 H7.5 L12 5 V19 L7.5 15 H4 Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M15.5 9.2 A4 4 0 0 1 15.5 14.8 M18.2 6.6 A7.6 7.6 0 0 1 18.2 17.4"
+              fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <svg class="ico-off" viewBox="0 0 24 24" width="19" height="19" aria-hidden="true">
+        <path d="M4 9 H7.5 L12 5 V19 L7.5 15 H4 Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M16 9.5 L21 14.5 M21 9.5 L16 14.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <!-- 自定义鼠标开关 -->
+    <button class="iconbtn iconbtn--minor" id="cursor-btn" type="button"
+            aria-pressed="true" aria-label="切换宝剑鼠标" title="宝剑鼠标 开/关" data-sound="click">
+      <svg viewBox="0 0 40 64" width="15" height="24" aria-hidden="true">
+        <path d="M20 2 L23.4 12 L23.4 40 L20 44 L16.6 40 L16.6 12 Z" fill="currentColor"/>
+        <rect x="7" y="43" width="26" height="3.6" rx="1.8" fill="currentColor"/>
+        <rect x="18.1" y="46.4" width="3.8" height="12" rx="1.6" fill="currentColor"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- ══════════ 侧边分区导航 ══════════ -->
+<nav class="railnav" id="railnav" aria-label="分区导航"></nav>
+
+<!-- ══════════ 顶部进度（羊皮纸卷轴） ══════════ -->
+<div class="scrollbar" aria-hidden="true"><div class="scrollbar__fill" id="scrollbar-fill"></div></div>
+
+<!-- ══════════ 主体 ══════════ -->
+<main id="main" tabindex="-1"></main>
+
+<footer class="footer">
+  <div class="footer__rule" aria-hidden="true"></div>
+  <p class="footer__line">linlxzx · 旅行者的空间</p>
+  <p class="footer__small">以 HTML / CSS / JavaScript 手写而成 · 无框架 · 无外部依赖</p>
+</footer>
+
+<!-- ══════════ 欢迎弹窗 ══════════ -->
+<div class="welcome" id="welcome" hidden>
+  <div class="welcome__veil" id="welcome-veil"></div>
+  <div class="welcome__scroll" role="dialog" aria-modal="true"
+       aria-labelledby="welcome-title" aria-describedby="welcome-body">
+    <div class="welcome__rod" aria-hidden="true"></div>
+    <div class="welcome__paper">
+      <div class="welcome__corner welcome__corner--tl" aria-hidden="true"></div>
+      <div class="welcome__corner welcome__corner--tr" aria-hidden="true"></div>
+      <div class="welcome__corner welcome__corner--bl" aria-hidden="true"></div>
+      <div class="welcome__corner welcome__corner--br" aria-hidden="true"></div>
+
+      <p class="welcome__kicker">WELCOME, TRAVELER</p>
+      <h2 class="welcome__title" id="welcome-title">欢迎来到旅行者的空间</h2>
+      <div class="welcome__divider" aria-hidden="true">
+        <span></span><svg viewBox="0 0 24 24" width="15" height="15"><path d="M12 2 L14.6 9.4 L22 12 L14.6 14.6 L12 22 L9.4 14.6 L2 12 L9.4 9.4 Z" fill="currentColor"/></svg><span></span>
+      </div>
+      <p class="welcome__body" id="welcome-body">
+        风尘仆仆,旅人。<br>
+        此处是一位骑士的落脚地 —— 有训练、有书卷、有珍藏,也有未竟的誓约。<br>
+        <em>卸下行囊,慢慢看吧。</em>
+      </p>
+
+      <div class="welcome__actions">
+        <button class="waxseal" id="welcome-ok" type="button" data-sound="seal">
+          <span class="waxseal__wax" aria-hidden="true">
+            <svg viewBox="0 0 44 44" width="44" height="44">
+              <path d="M22 3 C31 3 39 9 39 20 C39 31 32 41 22 41 C12 41 5 31 5 20 C5 9 13 3 22 3 Z"
+                    fill="currentColor" opacity="0.95"/>
+              <path d="M22 10 L25 18 L33 21 L25 24 L22 32 L19 24 L11 21 L19 18 Z" fill="rgba(255,235,205,.78)"/>
+            </svg>
+          </span>
+          <span class="waxseal__label">确 定</span>
+        </button>
+        <label class="welcome__remember">
+          <input type="checkbox" id="welcome-remember">
+          <span>下次不再提示</span>
+        </label>
+      </div>
+    </div>
+    <div class="welcome__rod" aria-hidden="true"></div>
+  </div>
+</div>
+
+<noscript>
+  <div class="noscript">本页的动画与音效需要 JavaScript。请在浏览器设置中启用 JavaScript 后刷新。</div>
+</noscript>
+
+<!-- ══════════ 脚本（普通 script，非 module —— 保证 file:// 下也能直接打开） ══════════ -->
+<script src="./content.js"></script>
+<script src="./scripts/audio.js"></script>
+<script src="./scripts/backdrops.js"></script>
+<script src="./scripts/knight.js"></script>
+<script src="./scripts/cursor.js"></script>
+<script src="./scripts/effects.js"></script>
+<script src="./scripts/render.js"></script>
+<script src="./scripts/app.js"></script>
+</body>
+</html>

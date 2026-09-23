@@ -1,0 +1,36 @@
+/* Cinzel & Cinzel Decorative — self-hosted webfonts (latin subset, woff2)
+ * License: SIL Open Font License 1.1 (OFL-1.1)
+ * Source: Google Fonts via @fontsource (cinzel 5.3.0, cinzel-decorative 5.3.0)
+ */
+
+@font-face {
+  font-family: 'Cinzel';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./cinzel-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cinzel';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./cinzel-latin-600-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cinzel';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./cinzel-latin-700-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cinzel Decorative';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./cinzel-decorative-latin-700-normal.woff2') format('woff2');
+}
