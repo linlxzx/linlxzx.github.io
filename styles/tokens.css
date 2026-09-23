@@ -47,10 +47,12 @@
   /* —— 时长 —— */
   --t-fast: 0.16s;  --t-mid: 0.30s;  --t-slow: 0.62s;  --t-theme: 0.85s;
 
-  /* —— 层级 —— */
+  /* —— 层级 ——
+     注意:宝剑鼠标(z-cursor)必须高于欢迎弹窗(z-welcome),
+     否则刚进页面时指针会被弹窗盖住,看不见鼠标。 */
   --z-backdrop: 0;  --z-particles: 1;  --z-content: 10;
   --z-rail: 40;     --z-topbar: 50;    --z-switcher: 60;
-  --z-cursor: 90;   --z-welcome: 100;
+  --z-welcome: 100; --z-cursor: 130;
 
   /* —— 阴影 —— */
   --shadow-panel: 0 18px 50px -22px rgba(0, 0, 0, 0.85);

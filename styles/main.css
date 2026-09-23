@@ -237,7 +237,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   margin-left: -20px;
   margin-top: -2px;
   transform-origin: 50% 5%;
-  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6));
+  /* 双层阴影:内圈是暗描边,保证在浅色羊皮纸弹窗上也能看清剑的轮廓 */
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.92)) drop-shadow(0 3px 6px rgba(0,0,0,0.6));
   transition: filter var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
 }
 .cursor__glow {
@@ -248,7 +249,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   transition: opacity var(--t-mid) var(--ease-out);
 }
 /* 悬停可交互元素:刃口发亮 */
-.cursor.is-hot .cursor__sword { filter: drop-shadow(0 0 7px var(--c-accent)) drop-shadow(0 3px 6px rgba(0,0,0,0.6)); }
+.cursor.is-hot .cursor__sword { filter: drop-shadow(0 0 2px rgba(0,0,0,0.92)) drop-shadow(0 0 8px var(--c-accent)) drop-shadow(0 3px 6px rgba(0,0,0,0.6)); }
 .cursor.is-hot .cursor__glow  { opacity: 1; }
 /* 在输入框上变成羽毛笔姿态 */
 .cursor.is-pen .cursor__sword { transform: rotate(-38deg) scale(0.86); }
