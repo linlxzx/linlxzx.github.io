@@ -141,6 +141,32 @@
   <p class="footer__small">以 HTML / CSS / JavaScript 手写而成 · 无框架 · 无外部依赖</p>
 </footer>
 
+<!-- ══════════ 卷册:点主页上的「门」之后,在这里显示那一篇的内容 ══════════ -->
+<div class="tome" id="tome" hidden>
+  <div class="tome__veil" id="tome-veil"></div>
+  <div class="tome__win" role="dialog" aria-modal="true" aria-labelledby="tome-title">
+    <span class="tome__corner tome__corner--tl" aria-hidden="true"></span>
+    <span class="tome__corner tome__corner--tr" aria-hidden="true"></span>
+    <span class="tome__corner tome__corner--bl" aria-hidden="true"></span>
+    <span class="tome__corner tome__corner--br" aria-hidden="true"></span>
+
+    <div class="tome__bar">
+      <span class="tome__label" id="tome-label"></span>
+      <button class="tome__close" id="tome-close" type="button" aria-label="合上卷册">
+        <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"
+             fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <path d="M5 5l14 14M19 5L5 19"/>
+        </svg>
+        <span>合上</span>
+      </button>
+    </div>
+
+    <h2 class="tome__title" id="tome-title"></h2>
+    <div class="tome__rule" aria-hidden="true"></div>
+    <div class="tome__body" id="tome-body"></div>
+  </div>
+</div>
+
 <!-- ══════════ 欢迎弹窗 ══════════ -->
 <div class="welcome" id="welcome" hidden>
   <div class="welcome__veil" id="welcome-veil"></div>

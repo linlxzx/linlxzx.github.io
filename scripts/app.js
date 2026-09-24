@@ -231,6 +231,101 @@
     });
   }
 
+  /* ═══════════════ 卷册:点主页上的「门」→ 开卷 ═══════════════
+     内容不在主页上显示,只有这里才会把那一篇的正文渲染出来。      */
+  var tome, tomeVeil, tomeBody, tomeTitle, tomeLabel, tomeClose;
+  var tomeOpenId = null, tomeLastFocus = null;
+
+  function openTome(id) {
+    if (!tome || !LZ.render || !LZ.render.chapterMeta) return;
+    var meta = LZ.render.chapterMeta(id);
+    if (!meta) return;
+
+    tomeOpenId = id;
+    tomeLastFocus = document.activeElement;
+
+    tomeLabel.textContent = meta.label || '';
+    tomeTitle.textContent = meta.title || '';
+    tomeBody.innerHTML = LZ.render.chapterBody(id);
+
+    /* 正文里的 .reveal 要立刻显示,否则它们会一直停在 opacity:0 */
+    var rs = tomeBody.querySelectorAll('.reveal');
+    for (var i = 0; i < rs.length; i++) rs[i].classList.add('is-in');
+
+    /* 顺带让正文里的进度条动起来 */
+    var bars = tomeBody.querySelectorAll('.stat__fill');
+    for (var j = 0; j < bars.length; j++) {
+      (function (b, n) {
+        var v = b.getAttribute('data-value') || '0';
+        setTimeout(function () { b.style.width = v + '%'; }, 150 + n * 110);
+      })(bars[j], j);
+    }
+
+    tome.hidden = false;
+    requestAnimationFrame(function () { tome.classList.add('is-on'); });
+    document.body.style.overflow = 'hidden';
+    if (LZ.audio) LZ.audio.play('page');
+
+    setTimeout(function () { if (tomeClose) tomeClose.focus(); }, 340);
+  }
+
+  function closeTome() {
+    if (!tome || tome.hidden) return;
+    tome.classList.remove('is-on');
+    document.body.style.overflow = '';
+    if (LZ.audio) LZ.audio.play('page');
+
+    setTimeout(function () {
+      tome.hidden = true;
+      if (tomeBody) tomeBody.innerHTML = '';
+      tomeOpenId = null;
+      if (tomeLastFocus && tomeLastFocus.focus) tomeLastFocus.focus();
+    }, 520);
+  }
+
+  function initTome() {
+    tome = document.getElementById('tome');
+    if (!tome) return;
+    tomeVeil  = document.getElementById('tome-veil');
+    tomeBody  = document.getElementById('tome-body');
+    tomeTitle = document.getElementById('tome-title');
+    tomeLabel = document.getElementById('tome-label');
+    tomeClose = document.getElementById('tome-close');
+
+    /* 点「门」→ 开卷(事件委托,卡片是动态生成的) */
+    document.addEventListener('click', function (e) {
+      var card = e.target.closest ? e.target.closest('.chapter') : null;
+      if (!card) return;
+      openTome(card.getAttribute('data-chapter'));
+    });
+
+    if (tomeClose) tomeClose.addEventListener('click', closeTome);
+    if (tomeVeil)  tomeVeil.addEventListener('click', closeTome);
+
+    /* ESC 合上 / Tab 焦点锁在卷册内 */
+    document.addEventListener('keydown', function (e) {
+      if (!tomeOpenId) return;
+      if (e.key === 'Escape') { e.preventDefault(); closeTome(); return; }
+      if (e.key === 'Tab') {
+        var f = tome.querySelectorAll('button, a[href], input, [tabindex]:not([tabindex="-1"])');
+        if (!f.length) return;
+        var first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+
+    /* 卡片上跟着鼠标的烛光 */
+    document.addEventListener('pointermove', function (e) {
+      var c = e.target.closest ? e.target.closest('.chapter') : null;
+      if (!c) return;
+      var r = c.getBoundingClientRect();
+      if (!r.width) return;
+      c.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+      c.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+    }, { passive: true });
+  }
+
   /* ═══════════════ 启动 ═══════════════ */
   function boot() {
     reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -306,7 +401,10 @@
     // 10. 键盘
     initKeys();
 
-    // 11. 欢迎弹窗(放最后,保证它压在一切之上)
+    // 11. 卷册(点主页上的「门」开卷)
+    initTome();
+
+    // 12. 欢迎弹窗(放最后,保证它压在一切之上)
     initWelcome();
   }
 

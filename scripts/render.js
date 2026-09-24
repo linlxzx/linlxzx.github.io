@@ -133,8 +133,26 @@
 
   /* ═══════════════ 组装 ═══════════════ */
 
-  function sectionHTML(sec) {
-    var blocks = (sec.blocks || []).map(function (b) {
+  /* 门上的六个图标(纯描边 SVG,想换图形就改这里) */
+  var ICONS = {
+    anvil:  '<path d="M2 10h12.6l6.4 2.6-6.4 2.6H9.4l-2 2.2H5.2L3.4 15.2Z"/><path d="M6.2 17.4h9.4l2.2 4.6H4Z"/>',
+    sword:  '<path d="M12 2.4 14.7 8v8.6H9.3V8Z"/><path d="M5.4 16.6h13.2"/><path d="M11 16.6V22h2v-5.4"/>',
+    book:   '<path d="M12 6.4C10 4.9 7 4.3 3 4.3v13.8c4 0 7 .6 9 2.1 2-1.5 5-2.1 9-2.1V4.3c-4 0-7 .6-9 2.1Z"/><path d="M12 6.4v13.8"/>',
+    chest:  '<path d="M3.2 10.4h17.6v9.4H3.2Z"/><path d="M3.2 10.4V8.2a4.2 4.2 0 0 1 4.2-4.2h9.2a4.2 4.2 0 0 1 4.2 4.2v2.2"/><path d="M3.2 14.2h17.6"/><path d="M10.4 12.2h3.2v4h-3.2Z"/>',
+    scroll: '<path d="M5.4 3.4h13.2v17.2H5.4Z"/><path d="M8.6 7.8h6.8M8.6 11.6h6.8M8.6 15.4h4.2"/>',
+    quill:  '<path d="M19.6 3.4c-6.6.6-11 4.6-13.3 10L4.6 18.4l5-1.7c5.4-2.3 9.4-6.7 10-13.3Z"/><path d="M8.2 16.2 3.6 20.8"/>'
+  };
+
+  function iconSVG(name) {
+    var p = ICONS[name] || ICONS.scroll;
+    return '<svg class="chapter__ico" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true" ' +
+           'fill="none" stroke="currentColor" stroke-width="1.45" ' +
+           'stroke-linejoin="round" stroke-linecap="round">' + p + '</svg>';
+  }
+
+  /* 把分区的 blocks 渲染出来 */
+  function blocksHTML(sec) {
+    return (sec.blocks || []).map(function (b) {
       var fn = BLOCKS[b.type];
       if (!fn) {
         // 未知类型:给出可见提示,方便你改 content.js
@@ -142,7 +160,57 @@
       }
       return fn(b);
     }).join('');
+  }
 
+  /* 这一篇是不是空的(空 → 显示 empty 那句话) */
+  function isEmpty(sec) {
+    return !(sec.blocks && sec.blocks.length);
+  }
+
+  /* 「此篇尚无内容」提示 —— 一旦 blocks 里有东西,这段就不会被渲染 */
+  function emptyNoteHTML(sec) {
+    return '<div class="empty-note">' +
+             '<span class="empty-note__mark" aria-hidden="true">✦</span>' +
+             '<p class="empty-note__line">' + esc(sec.empty || '此篇尚未落笔。') + '</p>' +
+             '<p class="empty-note__sub">此篇尚未落笔,待旅人续写</p>' +
+           '</div>';
+  }
+
+  /* 一扇「门」 */
+  function chapterHTML(sec, idx) {
+    var state = isEmpty(sec)
+      ? '<span class="chapter__state is-empty">' + esc(sec.empty || '此篇尚未落笔。') + '</span>'
+      : '<span class="chapter__state">' + esc(sec.blurb || '已录有若干') + '</span>';
+
+    return '<button class="chapter reveal" type="button" data-chapter="' + esc(sec.id) + '"' +
+             ' data-accent="' + esc(sec.accent || 'gold') + '" data-sound="hover" aria-haspopup="dialog">' +
+             '<span class="chapter__no" aria-hidden="true">' + ('0' + (idx + 1)).slice(-2) + '</span>' +
+             '<span class="chapter__icon">' + iconSVG(sec.icon) + '</span>' +
+             '<span class="chapter__label">' + esc(sec.label || '') + '</span>' +
+             '<span class="chapter__title">' + esc(sec.title) + '</span>' +
+             state +
+             '<span class="chapter__enter" aria-hidden="true">开卷 →</span>' +
+             '<span class="chapter__corner chapter__corner--tl" aria-hidden="true"></span>' +
+             '<span class="chapter__corner chapter__corner--br" aria-hidden="true"></span>' +
+           '</button>';
+  }
+
+  /* 六大篇章 —— 主页上的 2×3 卡片墙 */
+  function chaptersHTML(site, cards) {
+    var ch = site.chapters || {};
+    return '<section class="section section--chapters" id="chapters" data-accent="gold" aria-labelledby="t-chapters">' +
+             '<header class="section__head reveal">' +
+               '<span class="section__label">' + esc(ch.label || 'THE CHAPTERS') + '</span>' +
+               '<h2 class="section__title" id="t-chapters">' + esc(ch.title || '篇章') + '</h2>' +
+               '<div class="section__rule"></div>' +
+               (ch.lead ? '<p class="section__lead">' + esc(ch.lead) + '</p>' : '') +
+             '</header>' +
+             '<div class="chapters">' + cards.map(chapterHTML).join('') + '</div>' +
+           '</section>';
+  }
+
+  /* 直接铺在主页上的分区(骑士名册 / 信鸦) */
+  function sectionHTML(sec) {
     return '<section class="section" id="' + esc(sec.id) + '"' +
              ' data-accent="' + esc(sec.accent || 'gold') + '"' +
              ' aria-labelledby="t-' + esc(sec.id) + '">' +
@@ -151,12 +219,12 @@
                '<h2 class="section__title" id="t-' + esc(sec.id) + '">' + esc(sec.title) + '</h2>' +
                '<div class="section__rule"></div>' +
              '</header>' +
-             blocks +
+             blocksHTML(sec) +
            '</section>';
   }
 
-  function navHTML(sections) {
-    return sections.map(function (s) {
+  function navHTML(scrollSections) {
+    return scrollSections.map(function (s) {
       var short = s.nav || String(s.title).slice(0, 2);
       return '<a class="railnav__dot" href="#' + esc(s.id) + '" data-sound="hover"' +
              ' aria-label="' + esc(s.title) + '">' +
@@ -170,15 +238,41 @@
 
     build: function (site) {
       var sections = site.sections || [];
+      var cards = sections.filter(function (s) { return s.card; });
+
+      /* 主页:按原始顺序铺;走到第一个 card 分区时,把整块卡片墙插进去(只插一次) */
+      var placedGrid = false;
+      var html = '';
+      sections.forEach(function (s) {
+        if (s.card) {
+          if (!placedGrid) { html += chaptersHTML(site, cards); placedGrid = true; }
+        } else {
+          html += sectionHTML(s);
+        }
+      });
 
       var main = document.getElementById('main');
-      main.innerHTML = sections.map(sectionHTML).join('');
+      main.innerHTML = html;
+
+      /* 左侧导航:只列真正能滚到的位置(卡片墙算一个入口) */
+      var scrollSections = [];
+      var gridAdded = false;
+      sections.forEach(function (s) {
+        if (s.card) {
+          if (!gridAdded) {
+            var ch = site.chapters || {};
+            scrollSections.push({ id: 'chapters', nav: '篇章', title: ch.title || '篇章' });
+            gridAdded = true;
+          }
+        } else {
+          scrollSections.push(s);
+        }
+      });
 
       var nav = document.getElementById('railnav');
-      if (nav) nav.innerHTML = navHTML(sections);
+      if (nav) nav.innerHTML = navHTML(scrollSections);
 
-      // 站名 / 页脚 / 标题
-      var title = document.title;
+      /* 站名 / 页脚 / 标题 */
       if (site.name) {
         document.title = site.name + ' · 旅行者的空间';
         var bn = document.querySelector('.brand__name');
@@ -189,7 +283,7 @@
       var mt = document.querySelector('.brand__sub');
       if (mt && site.motto) mt.setAttribute('title', site.motto);
 
-      // 侧边导航点击 → 平滑滚动(不改变地址栏,避免 file:// 下跳动)
+      /* 侧边导航点击 → 平滑滚动(不改变地址栏,避免 file:// 下跳动) */
       if (nav) {
         nav.addEventListener('click', function (e) {
           var a = e.target.closest ? e.target.closest('.railnav__dot') : null;
@@ -199,7 +293,23 @@
         });
       }
 
+      /* 把卡片索引交给 app.js(开卷时要用) */
+      LZ.render._cards = {};
+      cards.forEach(function (s) { LZ.render._cards[s.id] = s; });
+
       return main;
+    },
+
+    /* 取某一篇的正文(空篇 → 返回那句提示) */
+    chapterBody: function (id) {
+      var sec = LZ.render._cards && LZ.render._cards[id];
+      if (!sec) return '';
+      return isEmpty(sec) ? emptyNoteHTML(sec) : blocksHTML(sec);
+    },
+
+    chapterMeta: function (id) {
+      var sec = LZ.render._cards && LZ.render._cards[id];
+      return sec ? { title: sec.title, label: sec.label, accent: sec.accent } : null;
     }
   };
 })();
