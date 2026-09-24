@@ -135,38 +135,27 @@
 <!-- ══════════ 主体 ══════════ -->
 <main id="main" tabindex="-1"></main>
 
+<!-- ══════════ 篇章视图:点主页上的「门」之后,整页换成这里 ══════════ -->
+<div class="chapview" id="chapview" hidden>
+  <div class="chapview__bar">
+    <a class="chapview__back" id="chapview-back" href="#" data-sound="hover">
+      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 5l-7 7 7 7"/>
+      </svg>
+      <span>回到名册</span>
+    </a>
+  </div>
+  <div class="chapview__inner" id="chapview-inner"></div>
+</div>
+
 <footer class="footer">
   <div class="footer__rule" aria-hidden="true"></div>
   <p class="footer__line">linlxzx · 旅行者的空间</p>
   <p class="footer__ai">纯 AI 制作</p>
   <p class="footer__small">全站代码、背景、骑士与音效皆由 AI 生成 · 无框架 · 无外部依赖</p>
 </footer>
-
-<!-- ══════════ 卷册:点主页上的「门」之后,在这里显示那一篇的内容 ══════════ -->
-<div class="tome" id="tome" hidden>
-  <div class="tome__veil" id="tome-veil"></div>
-  <div class="tome__win" role="dialog" aria-modal="true" aria-labelledby="tome-title">
-    <span class="tome__corner tome__corner--tl" aria-hidden="true"></span>
-    <span class="tome__corner tome__corner--tr" aria-hidden="true"></span>
-    <span class="tome__corner tome__corner--bl" aria-hidden="true"></span>
-    <span class="tome__corner tome__corner--br" aria-hidden="true"></span>
-
-    <div class="tome__bar">
-      <span class="tome__label" id="tome-label"></span>
-      <button class="tome__close" id="tome-close" type="button" aria-label="合上卷册">
-        <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"
-             fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-          <path d="M5 5l14 14M19 5L5 19"/>
-        </svg>
-        <span>合上</span>
-      </button>
-    </div>
-
-    <h2 class="tome__title" id="tome-title"></h2>
-    <div class="tome__rule" aria-hidden="true"></div>
-    <div class="tome__body" id="tome-body"></div>
-  </div>
-</div>
 
 <!-- ══════════ 欢迎弹窗 ══════════ -->
 <div class="welcome" id="welcome" hidden>

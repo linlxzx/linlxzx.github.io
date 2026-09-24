@@ -231,29 +231,30 @@
     });
   }
 
-  /* ═══════════════ 卷册:点主页上的「门」→ 开卷 ═══════════════
-     内容不在主页上显示,只有这里才会把那一篇的正文渲染出来。      */
-  var tome, tomeVeil, tomeBody, tomeTitle, tomeLabel, tomeClose;
-  var tomeOpenId = null, tomeLastFocus = null;
+  /* ═══════════════ 篇章视图:点主页上的「门」→ 整页换成那一篇 ═══════════════
+     用地址栏 hash 做路由:#/forge 就是「铸剑录」那一页。
+     · 主页会被整块换掉(不是盖在上面的小弹窗)
+     · 浏览器前进/后退可用,也能直接把某一篇的链接发出去
+     · 空篇在新页面上显示那句提示 + 三张插图                          */
+  var chapview, chapInner, chapBack;
+  var chapId = null, homeScroll = 0;
 
-  function openTome(id) {
-    if (!tome || !LZ.render || !LZ.render.chapterMeta) return;
+  function showChapter(id) {
+    if (!chapview || !LZ.render || !LZ.render.chapterMeta) return;
     var meta = LZ.render.chapterMeta(id);
-    if (!meta) return;
+    if (!meta) { showHome(); return; }
 
-    tomeOpenId = id;
-    tomeLastFocus = document.activeElement;
+    if (!chapId) homeScroll = window.scrollY || 0;   /* 记住主页滚到哪 */
+    chapId = id;
 
-    tomeLabel.textContent = meta.label || '';
-    tomeTitle.textContent = meta.title || '';
-    tomeBody.innerHTML = LZ.render.chapterBody(id);
+    chapInner.innerHTML = LZ.render.chapterView(id);
 
-    /* 正文里的 .reveal 要立刻显示,否则它们会一直停在 opacity:0 */
-    var rs = tomeBody.querySelectorAll('.reveal');
+    /* 视图里的 .reveal 要立刻显示,否则会一直停在 opacity:0 */
+    var rs = chapInner.querySelectorAll('.reveal');
     for (var i = 0; i < rs.length; i++) rs[i].classList.add('is-in');
 
     /* 顺带让正文里的进度条动起来 */
-    var bars = tomeBody.querySelectorAll('.stat__fill');
+    var bars = chapInner.querySelectorAll('.stat__fill');
     for (var j = 0; j < bars.length; j++) {
       (function (b, n) {
         var v = b.getAttribute('data-value') || '0';
@@ -261,59 +262,89 @@
       })(bars[j], j);
     }
 
-    tome.hidden = false;
-    requestAnimationFrame(function () { tome.classList.add('is-on'); });
-    document.body.style.overflow = 'hidden';
-    if (LZ.audio) LZ.audio.play('page');
+    var main = document.getElementById('main');
+    if (main) main.hidden = true;
+    var rn = document.getElementById('railnav');
+    if (rn) rn.hidden = true;
+    chapview.hidden = false;
 
-    setTimeout(function () { if (tomeClose) tomeClose.focus(); }, 340);
+    /* 这一篇有自己的氛围色 */
+    document.body.setAttribute('data-accent', meta.accent || 'gold');
+    var nm = (window.SITE_CONTENT && window.SITE_CONTENT.name) || '';
+    document.title = meta.title + (nm ? ' · ' + nm : '');
+
+    window.scrollTo(0, 0);
+    if (LZ.audio) LZ.audio.play('page');
   }
 
-  function closeTome() {
-    if (!tome || tome.hidden) return;
-    tome.classList.remove('is-on');
-    document.body.style.overflow = '';
+  function showHome() {
+    if (!chapview || chapview.hidden) return;
+    chapId = null;
+    chapview.hidden = true;
+    chapInner.innerHTML = '';
+    var main = document.getElementById('main');
+    if (main) main.hidden = false;
+    var rn = document.getElementById('railnav');
+    if (rn) rn.hidden = false;
     if (LZ.audio) LZ.audio.play('page');
+    window.scrollTo(0, homeScroll);
+    var nm = (window.SITE_CONTENT && window.SITE_CONTENT.name) || '';
+    if (nm) document.title = nm + ' · 旅行者的空间';
+  }
 
-    setTimeout(function () {
-      tome.hidden = true;
-      if (tomeBody) tomeBody.innerHTML = '';
-      tomeOpenId = null;
-      if (tomeLastFocus && tomeLastFocus.focus) tomeLastFocus.focus();
-    }, 520);
+  /* 从 / 到 主页:去掉 hash 但不新增历史条目(这样"返回"不会退回那一篇) */
+  function goHome() {
+    if (location.hash) {
+      history.replaceState(null, '', location.pathname + location.search);
+      applyHash();
+    } else {
+      showHome();
+    }
+  }
+
+  function idFromHash() {
+    var m = /^#\/(.+)$/.exec(location.hash || '');
+    return m ? decodeURIComponent(m[1]) : '';
+  }
+
+  function applyHash() {
+    var id = idFromHash();
+    if (id && LZ.render && LZ.render.chapterMeta && LZ.render.chapterMeta(id)) showChapter(id);
+    else showHome();
+  }
+
+  function goChapter(id) {
+    var target = '#/' + id;
+    if (location.hash === target) applyHash();
+    else location.hash = target;          /* 触发 hashchange → applyHash */
   }
 
   function initTome() {
-    tome = document.getElementById('tome');
-    if (!tome) return;
-    tomeVeil  = document.getElementById('tome-veil');
-    tomeBody  = document.getElementById('tome-body');
-    tomeTitle = document.getElementById('tome-title');
-    tomeLabel = document.getElementById('tome-label');
-    tomeClose = document.getElementById('tome-close');
+    chapview = document.getElementById('chapview');
+    if (!chapview) return;
+    chapInner = document.getElementById('chapview-inner');
+    chapBack  = document.getElementById('chapview-back');
 
-    /* 点「门」→ 开卷(事件委托,卡片是动态生成的) */
+    /* 点「门」→ 进入那一篇(事件委托,卡片是动态生成的) */
     document.addEventListener('click', function (e) {
       var card = e.target.closest ? e.target.closest('.chapter') : null;
       if (!card) return;
-      openTome(card.getAttribute('data-chapter'));
+      e.preventDefault();
+      goChapter(card.getAttribute('data-chapter'));
     });
 
-    if (tomeClose) tomeClose.addEventListener('click', closeTome);
-    if (tomeVeil)  tomeVeil.addEventListener('click', closeTome);
+    /* 「回到名册」 */
+    if (chapBack) chapBack.addEventListener('click', function (e) {
+      e.preventDefault();
+      goHome();
+    });
 
-    /* ESC 合上 / Tab 焦点锁在卷册内 */
+    /* ESC 回主页 */
     document.addEventListener('keydown', function (e) {
-      if (!tomeOpenId) return;
-      if (e.key === 'Escape') { e.preventDefault(); closeTome(); return; }
-      if (e.key === 'Tab') {
-        var f = tome.querySelectorAll('button, a[href], input, [tabindex]:not([tabindex="-1"])');
-        if (!f.length) return;
-        var first = f[0], last = f[f.length - 1];
-        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-      }
+      if (e.key === 'Escape' && chapId) { e.preventDefault(); goHome(); }
     });
+
+    window.addEventListener('hashchange', applyHash);
 
     /* 卡片上跟着鼠标的烛光 */
     document.addEventListener('pointermove', function (e) {
@@ -324,6 +355,9 @@
       c.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
       c.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
     }, { passive: true });
+
+    /* 打开时就带着 hash 的话(别人分享的链接),直接进那一篇 */
+    applyHash();
   }
 
   /* ═══════════════ 启动 ═══════════════ */
