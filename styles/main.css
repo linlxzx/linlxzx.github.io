@@ -871,6 +871,17 @@ a.card { color: inherit; }
   letter-spacing: 0.24em; text-transform: uppercase;
   font-size: var(--fs-xs); color: var(--c-ink-dim);
 }
+/* 醒目声明:本站由 AI 制作 */
+.footer__ai {
+  margin: var(--sp-4) 0 var(--sp-2);
+  font-family: var(--font-display);
+  font-size: var(--fs-base);
+  font-weight: 700;
+  letter-spacing: 0.34em;
+  text-indent: 0.34em;              /* 抵消最后一个字右侧的字距,视觉居中 */
+  color: var(--c-accent);
+  text-shadow: 0 0 22px var(--c-glow);
+}
 .footer__small { font-size: var(--fs-xs); color: var(--c-ink-faint); margin: 0; }
 
 /* ───────────────────────── 17. 欢迎弹窗 ───────────────────────── */
